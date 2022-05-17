@@ -107,7 +107,9 @@ int main() {
     return 0;
 }
 
-
+/* Refer to,
+ * https://cacr.uwaterloo.ca/hac/about/chap11.pdf 
+ */
 
 void test_scenario_2_success() {
     std::cout << "Test <test_scenario_2_success>\n";
