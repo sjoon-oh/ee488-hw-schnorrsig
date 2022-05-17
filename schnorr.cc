@@ -37,6 +37,32 @@ EE488::BigNumberWrapper::~BigNumberWrapper() {
 }
 
 
+EE488::BigNumberWrapper::BigNumberWrapper(const BigNumberWrapper& arg_bnw) {
+
+    // Free all actors
+    if (arg_bnw.actor != nullptr)
+        BN_copy(this->actor, arg_bnw.actor);
+}
+
+
+EE488::BigNumberWrapper::BigNumberWrapper(const BigNumberWrapper&& arg_bnw) {
+
+    // Free all actors
+    if (arg_bnw.actor != nullptr)
+        BN_copy(this->actor, arg_bnw.actor);
+}
+
+
+EE488::BigNumberWrapper& 
+EE488::BigNumberWrapper::operator =(const BigNumberWrapper& arg_bnw) {
+
+    if (arg_bnw.actor != nullptr)
+        BN_copy(this->actor, arg_bnw.actor);
+
+    return *this;
+};
+
+
 /* 
  * BigNumberManager Actions */
 EE488::BigNumberManager::BigNumberManager() {

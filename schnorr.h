@@ -56,11 +56,11 @@ namespace EE488 {
         BIGNUM* actor;
         
         BigNumberWrapper();
+        BigNumberWrapper(const BigNumberWrapper&);
+        BigNumberWrapper(const BigNumberWrapper&&);
         ~BigNumberWrapper();
 
-        BigNumberWrapper& operator =(BigNumberWrapper) = delete;
-        BigNumberWrapper(BigNumberWrapper&) = delete;
-        BigNumberWrapper(BigNumberWrapper&&) = delete;
+        BigNumberWrapper& operator =(const BigNumberWrapper&);
     };
 
     using bnw_t = BigNumberWrapper;
