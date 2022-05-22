@@ -1,0 +1,187 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/mnt/ssd2/workspace/vbox/shared/ee488-hw-schnorrsig/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	/p5.9.20210905.0/
+$(TARGET)	Makefile	/^$(TARGET): $(OBJS)$/;"	t
+$(TEST_TARGET)	Makefile	/^$(TEST_TARGET): $(TEST_OBJS)$/;"	t
+*.tcc	.vscode/settings.json	/^        "*.tcc": "cpp",$/;"	s	object:files.associations
+BN_E	schnorr.h	/^        BN_E,           \/\/  6: e, hashed value$/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_G	schnorr.h	/^        BN_G,           \/\/  2: g, generator$/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_K	schnorr.h	/^        BN_K,           \/\/  3: k, $/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_NE	schnorr.h	/^        BN_NE,          \/\/  8: ne, new e, for verification$/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_P	schnorr.h	/^        BN_P = 0x00,    \/\/  0: p$/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_PK	schnorr.h	/^        BN_PK,          \/\/  9: pk, public key$/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_Q	schnorr.h	/^        BN_Q,           \/\/  1: q$/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_R	schnorr.h	/^        BN_R,           \/\/  4: r, $/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_S	schnorr.h	/^        BN_S,           \/\/  5: s,$/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_SK	schnorr.h	/^        BN_SK,          \/\/ 10: sk, secrey key$/;"	e	enum:EE488::__anonf1d1d31a0103
+BN_V	schnorr.h	/^        BN_V,           \/\/  7: v,$/;"	e	enum:EE488::__anonf1d1d31a0103
+BigNumberManager	schnorr.cc	/^EE488::BigNumberManager::BigNumberManager() {$/;"	f	class:EE488::BigNumberManager
+BigNumberManager	schnorr.cc	/^EE488::BigNumberManager::BigNumberManager(std::vector<bnw_t>* arg_asset) {$/;"	f	class:EE488::BigNumberManager
+BigNumberManager	schnorr.h	/^    class BigNumberManager {$/;"	c	namespace:EE488
+BigNumberWrapper	schnorr.cc	/^EE488::BigNumberWrapper::BigNumberWrapper() : actor(BN_new()) {}$/;"	f	class:EE488::BigNumberWrapper
+BigNumberWrapper	schnorr.cc	/^EE488::BigNumberWrapper::BigNumberWrapper(const BigNumberWrapper& arg_bnw) {$/;"	f	class:EE488::BigNumberWrapper
+BigNumberWrapper	schnorr.cc	/^EE488::BigNumberWrapper::BigNumberWrapper(const BigNumberWrapper&& arg_bnw) {$/;"	f	class:EE488::BigNumberWrapper
+BigNumberWrapper	schnorr.h	/^    struct BigNumberWrapper final {$/;"	s	namespace:EE488
+CC	Makefile	/^CC=g++$/;"	m
+Communicator	app.cc	/^    Communicator(const char* arg_name) : name(arg_name) {}$/;"	f	class:Communicator	file:
+Communicator	app.cc	/^class Communicator {$/;"	c	file:
+EE488	schnorr.h	/^namespace EE488 {$/;"	n
+HDRS	Makefile	/^HDRS=schnorr.h$/;"	m
+MAX_CLEN	schnorr.h	/^    const unsigned MAX_CLEN = MAX_SLEN + 1;$/;"	v	namespace:EE488	typeref:typename:const unsigned
+MAX_SLEN	schnorr.h	/^    const unsigned MAX_SLEN = 90000;$/;"	v	namespace:EE488	typeref:typename:const unsigned
+NPARAMS	schnorr.h	/^    const unsigned NPARAMS  = 11;$/;"	v	namespace:EE488	typeref:typename:const unsigned
+OBJS	Makefile	/^OBJS=app.o schnorr.o$/;"	m
+OPENSSL_API_COMPAT	schnorr.h	/^#define OPENSSL_API_COMPAT /;"	d
+SRC	Makefile	/^SRC=app.cc schnorr.cc$/;"	m
+SSL_FLAGS	Makefile	/^SSL_FLAGS=-lssl -lcrypto$/;"	m
+SchnorrSignature	schnorr.h	/^        SchnorrSignature() : $/;"	f	class:EE488::SchnorrSignature
+SchnorrSignature	schnorr.h	/^    class SchnorrSignature {$/;"	c	namespace:EE488
+TARGET	Makefile	/^TARGET=schnorr.run$/;"	m
+TEST_OBJS	Makefile	/^TEST_OBJS=api_test.o schnorr.o$/;"	m
+TEST_SRC	Makefile	/^TEST_SRC=api_test.cc schnorr.cc$/;"	m
+TEST_TARGET	Makefile	/^TEST_TARGET=api-test.run$/;"	m
+__OPENSSL	schnorr.cc	/^#define __OPENSSL$/;"	d	file:
+__OPENSSL	schnorr.h	/^#define __OPENSSL$/;"	d
+__PRINT	api_test.cc	/^#define __PRINT$/;"	d	file:
+__PRINT	app.cc	/^#define __PRINT$/;"	d	file:
+__PRINT	schnorr.cc	/^#define __PRINT$/;"	d	file:
+__anonf1d1d31a0103	schnorr.h	/^    enum {$/;"	g	namespace:EE488
+__test_func__	app.cc	/^typedef std::function<void()> __test_func__;$/;"	t	file:
+actor	schnorr.h	/^        BIGNUM* actor;$/;"	m	struct:EE488::BigNumberWrapper	typeref:typename:BIGNUM *
+algorithm	.vscode/settings.json	/^        "algorithm": "cpp",$/;"	s	object:files.associations
+all	Makefile	/^all: $(TARGET) $(TEST_TARGET)$/;"	t
+array	.vscode/settings.json	/^        "array": "cpp",$/;"	s	object:files.associations
+asset	schnorr.h	/^        std::vector<bnw_t> asset;$/;"	m	class:EE488::BigNumberManager	typeref:typename:std::vector<bnw_t>
+atomic	.vscode/settings.json	/^        "atomic": "cpp",$/;"	s	object:files.associations
+bit	.vscode/settings.json	/^        "bit": "cpp",$/;"	s	object:files.associations
+bnm_t	schnorr.h	/^    using bnm_t = BigNumberManager;$/;"	t	namespace:EE488	typeref:typename:BigNumberManager
+bnw_t	schnorr.h	/^    using bnw_t = BigNumberWrapper;$/;"	t	namespace:EE488	typeref:typename:BigNumberWrapper
+cctype	.vscode/settings.json	/^        "cctype": "cpp",$/;"	s	object:files.associations
+chrono	.vscode/settings.json	/^        "chrono": "cpp",$/;"	s	object:files.associations
+cinttypes	.vscode/settings.json	/^        "cinttypes": "cpp",$/;"	s	object:files.associations
+clean	Makefile	/^clean:$/;"	t
+clocale	.vscode/settings.json	/^        "clocale": "cpp",$/;"	s	object:files.associations
+cmath	.vscode/settings.json	/^        "cmath": "cpp",$/;"	s	object:files.associations
+codecvt	.vscode/settings.json	/^        "codecvt": "cpp",$/;"	s	object:files.associations
+compare	.vscode/settings.json	/^        "compare": "cpp",$/;"	s	object:files.associations
+concepts	.vscode/settings.json	/^        "concepts": "cpp",$/;"	s	object:files.associations
+condition_variable	.vscode/settings.json	/^        "condition_variable": "cpp",$/;"	s	object:files.associations
+console_msg	schnorr.cc	/^void EE488::SchnorrSignature::console_msg(const char* arg_fname, const char* arg_msg) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:void
+console_msg	schnorr.cc	/^void EE488::SchnorrSignature::console_msg(const char* arg_fname, const std::string& arg_str) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:void
+console_msgn	schnorr.cc	/^void EE488::SchnorrSignature::console_msgn(const char* arg_fname, const char* arg_msg) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:void
+console_msgn	schnorr.cc	/^void EE488::SchnorrSignature::console_msgn(const char* arg_fname, const std::string& arg_str) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:void
+cstdarg	.vscode/settings.json	/^        "cstdarg": "cpp",$/;"	s	object:files.associations
+cstddef	.vscode/settings.json	/^        "cstddef": "cpp",$/;"	s	object:files.associations
+cstdint	.vscode/settings.json	/^        "cstdint": "cpp",$/;"	s	object:files.associations
+cstdio	.vscode/settings.json	/^        "cstdio": "cpp",$/;"	s	object:files.associations
+cstdlib	.vscode/settings.json	/^        "cstdlib": "cpp",$/;"	s	object:files.associations
+cstring	.vscode/settings.json	/^        "cstring": "cpp",$/;"	s	object:files.associations
+ctime	.vscode/settings.json	/^        "ctime": "cpp",$/;"	s	object:files.associations
+cwchar	.vscode/settings.json	/^        "cwchar": "cpp",$/;"	s	object:files.associations
+cwctype	.vscode/settings.json	/^        "cwctype": "cpp",$/;"	s	object:files.associations
+deque	.vscode/settings.json	/^        "deque": "cpp",$/;"	s	object:files.associations
+do_rhash	schnorr.cc	/^int EE488::SchnorrSignature::do_rhash() {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+do_rhash	schnorr.cc	/^int EE488::SchnorrSignature::do_rhash(const char* arg_str) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+do_rhash	schnorr.cc	/^int EE488::SchnorrSignature::do_rhash(std::string arg_str) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+do_regmsg	schnorr.cc	/^int EE488::SchnorrSignature::do_regmsg(const char* arg_pmsg) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+do_reset	schnorr.cc	/^int EE488::SchnorrSignature::do_reset() {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+do_rkeygen	schnorr.cc	/^int EE488::SchnorrSignature::do_rkeygen(const int arg_bits) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+do_sign	schnorr.cc	/^int EE488::SchnorrSignature::do_sign() {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+do_tkeygen	schnorr.cc	/^int EE488::SchnorrSignature::do_tkeygen(const int arg_l, const int arg_n) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+do_verify	schnorr.cc	/^int EE488::SchnorrSignature::do_verify() {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:int
+ee488-hw-schnorrsig	README.md	/^# ee488-hw-schnorrsig$/;"	c
+exception	.vscode/settings.json	/^        "exception": "cpp",$/;"	s	object:files.associations
+files.associations	.vscode/settings.json	/^    "files.associations": {$/;"	o
+fstream	.vscode/settings.json	/^        "fstream": "cpp",$/;"	s	object:files.associations
+functional	.vscode/settings.json	/^        "functional": "cpp",$/;"	s	object:files.associations
+future	.vscode/settings.json	/^        "future": "cpp",$/;"	s	object:files.associations
+get_asset	schnorr.cc	/^const BIGNUM* EE488::BigNumberManager::get_asset(int arg_idx) {$/;"	f	class:EE488::BigNumberManager	typeref:typename:const BIGNUM *
+get_manager	app.cc	/^    SchnorrSignature* get_manager() { return &sig_manager; };$/;"	f	class:Communicator	typeref:typename:SchnorrSignature *	file:
+get_manager	schnorr.h	/^        const bnm_t* get_manager() const { return &manager; }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const bnm_t *
+get_mstr	schnorr.h	/^        const unsigned char* get_mstr() { return this->mstr; }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const unsigned char *
+get_sha_context	schnorr.h	/^        const SHA256_CTX get_sha_context() { return this->sha_context; }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const SHA256_CTX
+get_sha_digest	schnorr.h	/^        const unsigned char* get_sha_digest() { return this->sha_digest; }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const unsigned char *
+get_signature_e	schnorr.h	/^        const BIGNUM* get_signature_e() { return manager.get_asset(BN_E); }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const BIGNUM *
+get_signature_s	schnorr.h	/^        const BIGNUM* get_signature_s() { return manager.get_asset(BN_S); }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const BIGNUM *
+hash_map	.vscode/settings.json	/^        "hash_map": "cpp",$/;"	s	object:files.associations
+initializer_list	.vscode/settings.json	/^        "initializer_list": "cpp",$/;"	s	object:files.associations
+iomanip	.vscode/settings.json	/^        "iomanip": "cpp",$/;"	s	object:files.associations
+iosfwd	.vscode/settings.json	/^        "iosfwd": "cpp",$/;"	s	object:files.associations
+iostream	.vscode/settings.json	/^        "iostream": "cpp",$/;"	s	object:files.associations
+is_pk_ready	schnorr.h	/^        inline const bool is_pk_ready() { return this->pk_ready; }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const bool
+is_msg_ready	schnorr.h	/^        inline const bool is_msg_ready() { return this->msg_ready; }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const bool
+is_sign_ready	schnorr.h	/^        inline const bool is_sign_ready() { return this->sign_ready; }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const bool
+is_veri_ready	schnorr.h	/^        inline const bool is_veri_ready() { return this->veri_ready; }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:const bool
+istream	.vscode/settings.json	/^        "istream": "cpp",$/;"	s	object:files.associations
+iterator	.vscode/settings.json	/^        "iterator": "cpp",$/;"	s	object:files.associations
+pk_ready	schnorr.h	/^        bool pk_ready, msg_ready, sign_ready, veri_ready;$/;"	m	class:EE488::SchnorrSignature	typeref:typename:bool
+limits	.vscode/settings.json	/^        "limits": "cpp",$/;"	s	object:files.associations
+list	.vscode/settings.json	/^        "list": "cpp",$/;"	s	object:files.associations
+main	api_test.cc	/^int main () {$/;"	f	typeref:typename:int
+main	app.cc	/^int main() {$/;"	f	typeref:typename:int
+manager	schnorr.h	/^        bnm_t manager;$/;"	m	class:EE488::SchnorrSignature	typeref:typename:bnm_t
+map	.vscode/settings.json	/^        "map": "cpp",$/;"	s	object:files.associations
+memory	.vscode/settings.json	/^        "memory": "cpp",$/;"	s	object:files.associations
+memory_resource	.vscode/settings.json	/^        "memory_resource": "cpp",$/;"	s	object:files.associations
+msg_ready	schnorr.h	/^        bool pk_ready, msg_ready, sign_ready, veri_ready;$/;"	m	class:EE488::SchnorrSignature	typeref:typename:bool
+mstr	schnorr.h	/^        unsigned char mstr[MAX_CLEN] = { 0, };$/;"	m	class:EE488::SchnorrSignature	typeref:typename:unsigned char[]
+mutex	.vscode/settings.json	/^        "mutex": "cpp",$/;"	s	object:files.associations
+name	app.cc	/^    std::string name;               \/\/ Who am I?$/;"	m	class:Communicator	typeref:typename:std::string	file:
+new	.vscode/settings.json	/^        "new": "cpp",$/;"	s	object:files.associations
+numbers	.vscode/settings.json	/^        "numbers": "cpp",$/;"	s	object:files.associations
+numeric	.vscode/settings.json	/^        "numeric": "cpp",$/;"	s	object:files.associations
+operator =	schnorr.cc	/^EE488::BigNumberWrapper::operator =(const BigNumberWrapper& arg_bnw) {$/;"	f	class:EE488::BigNumberWrapper	typeref:typename:EE488::BigNumberWrapper &
+optional	.vscode/settings.json	/^        "optional": "cpp",$/;"	s	object:files.associations
+ostream	.vscode/settings.json	/^        "ostream": "cpp",$/;"	s	object:files.associations
+prepare_key_r	app.cc	/^    int prepare_key_r(const int arg_bits) { return sig_manager.do_rkeygen(arg_bits); }$/;"	f	class:Communicator	typeref:typename:int	file:
+prepare_msg	app.cc	/^    int prepare_msg(const char* arg_msg) { return sig_manager.do_regmsg(arg_msg); }$/;"	f	class:Communicator	typeref:typename:int	file:
+random	.vscode/settings.json	/^        "random": "cpp",$/;"	s	object:files.associations
+ratio	.vscode/settings.json	/^        "ratio": "cpp",$/;"	s	object:files.associations
+reset_all	app.cc	/^    int reset_all() { return sig_manager.do_reset(); }$/;"	f	class:Communicator	typeref:typename:int	file:
+reset_asset	schnorr.cc	/^void EE488::BigNumberManager::reset_asset() {$/;"	f	class:EE488::BigNumberManager	typeref:typename:void
+run	Makefile	/^run: $(TARGET)$/;"	t
+run-test	Makefile	/^run-test: test$/;"	t
+semaphore	.vscode/settings.json	/^        "semaphore": "cpp",$/;"	s	object:files.associations
+set	.vscode/settings.json	/^        "set": "cpp",$/;"	s	object:files.associations
+set_asset	schnorr.cc	/^void EE488::BigNumberManager::set_asset(BIGNUM* arg_num, int arg_idx) {$/;"	f	class:EE488::BigNumberManager	typeref:typename:void
+set_keys	schnorr.cc	/^void EE488::BigNumberManager::set_keys(BIGNUM* arg_pk, BIGNUM* arg_sk) {$/;"	f	class:EE488::BigNumberManager	typeref:typename:void
+set_signature_e	schnorr.h	/^        void set_signature_e(BIGNUM* arg_e) { manager.set_asset(arg_e, BN_E); }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:void
+set_signature_pair	schnorr.h	/^        inline void set_signature_pair(BIGNUM* arg_s, BIGNUM* arg_e) {$/;"	f	class:EE488::SchnorrSignature	typeref:typename:void
+set_signature_s	schnorr.h	/^        void set_signature_s(BIGNUM* arg_s) { manager.set_asset(arg_s, BN_S); }$/;"	f	class:EE488::SchnorrSignature	typeref:typename:void
+sha_context	schnorr.h	/^        SHA256_CTX sha_context;$/;"	m	class:EE488::SchnorrSignature	typeref:typename:SHA256_CTX
+sha_digest	schnorr.h	/^        unsigned char sha_digest[SHA256_DIGEST_LENGTH] = { 0, };$/;"	m	class:EE488::SchnorrSignature	typeref:typename:unsigned char[]
+sig_manager	app.cc	/^    SchnorrSignature sig_manager;   \/\/ Signature Manager$/;"	m	class:Communicator	typeref:typename:SchnorrSignature	file:
+sign_ready	schnorr.h	/^        bool pk_ready, msg_ready, sign_ready, veri_ready;$/;"	m	class:EE488::SchnorrSignature	typeref:typename:bool
+source_location	.vscode/settings.json	/^        "source_location": "cpp",$/;"	s	object:files.associations
+sstream	.vscode/settings.json	/^        "sstream": "cpp",$/;"	s	object:files.associations
+stdexcept	.vscode/settings.json	/^        "stdexcept": "cpp",$/;"	s	object:files.associations
+stop_token	.vscode/settings.json	/^        "stop_token": "cpp",$/;"	s	object:files.associations
+streambuf	.vscode/settings.json	/^        "streambuf": "cpp",$/;"	s	object:files.associations
+string	.vscode/settings.json	/^        "string": "cpp",$/;"	s	object:files.associations
+string_view	.vscode/settings.json	/^        "string_view": "cpp",$/;"	s	object:files.associations
+system_error	.vscode/settings.json	/^        "system_error": "cpp",$/;"	s	object:files.associations
+test	Makefile	/^test: $(TEST_TARGET)$/;"	t
+test_scenario_2_fail	app.cc	/^void test_scenario_2_fail() {$/;"	f	typeref:typename:void
+test_scenario_2_success	app.cc	/^void test_scenario_2_success() {$/;"	f	typeref:typename:void
+test_scenario_multi	app.cc	/^void test_scenario_multi() {$/;"	f	typeref:typename:void
+testf	app.cc	/^std::vector<__test_func__> testf;$/;"	v	typeref:typename:std::vector<__test_func__>
+thread	.vscode/settings.json	/^        "thread": "cpp",$/;"	s	object:files.associations
+tuple	.vscode/settings.json	/^        "tuple": "cpp",$/;"	s	object:files.associations
+type_traits	.vscode/settings.json	/^        "type_traits": "cpp",$/;"	s	object:files.associations
+typeinfo	.vscode/settings.json	/^        "typeinfo": "cpp",$/;"	s	object:files.associations
+unordered_map	.vscode/settings.json	/^        "unordered_map": "cpp",$/;"	s	object:files.associations
+unordered_set	.vscode/settings.json	/^        "unordered_set": "cpp",$/;"	s	object:files.associations
+utility	.vscode/settings.json	/^        "utility": "cpp",$/;"	s	object:files.associations
+valarray	.vscode/settings.json	/^        "valarray": "cpp",$/;"	s	object:files.associations
+variant	.vscode/settings.json	/^        "variant": "cpp"$/;"	s	object:files.associations
+vector	.vscode/settings.json	/^        "vector": "cpp",$/;"	s	object:files.associations
+veri_ready	schnorr.h	/^        bool pk_ready, msg_ready, sign_ready, veri_ready;$/;"	m	class:EE488::SchnorrSignature	typeref:typename:bool
+~BigNumberWrapper	schnorr.cc	/^EE488::BigNumberWrapper::~BigNumberWrapper() {$/;"	f	class:EE488::BigNumberWrapper

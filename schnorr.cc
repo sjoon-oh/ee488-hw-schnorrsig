@@ -1,8 +1,14 @@
 /* Author: SukJoon Oh
- * Environment: 
- *      Manjaro Quonos 21.2, 
+ * Test Environment: 
+ *  - Manjaro Quonos 21.2, Native Desktop
  *      g++ (GCC) 11.2.0,
- *      OpenSSL 1.1.1n (comes default in coreutils)
+ *      OpenSSL 1.1.1n 
+ *      (comes default in coreutils, no additional installation needed)
+ *  - Ubuntu 20.04.4 LTS (Focal Fossa), VM Instance
+ *      g++ (GCC) 9.4.0
+ *      OpenSSL 1.1.1f
+ *      libssl-dev needed, not default in RAW Ubuntu 20.04.
+ *          run: apt install libssl-dev
  * Compilation Option: -lssl -lcrypto
  *      Refer to Makefile for more information.
  * Legal Stuff: None
@@ -11,9 +17,8 @@
 /* Every API information can be found in the official document:
  *  https://www.openssl.org, specifically https://www.openssl.org/docs/man1.1.1/man3/
  */
-#define __PRINT
+
 #ifdef __PRINT
-#include <chrono>
 #include <iostream>
 #endif
 
@@ -25,6 +30,8 @@
 #include <cstring>
 
 #include "./schnorr.h"
+#define __BN_MODIFIABLE__(X) const_cast<BIGNUM*>((X))
+
 
 /* 
  * BigNumberWrapper Actions */
@@ -66,7 +73,6 @@ EE488::BigNumberWrapper::operator =(const BigNumberWrapper& arg_bnw) {
 /* 
  * BigNumberManager Actions */
 EE488::BigNumberManager::BigNumberManager() {
-
     asset = std::vector<bnw_t>(NPARAMS);
 
     for (auto& elem: asset)
@@ -83,10 +89,8 @@ EE488::BigNumberManager::BigNumberManager(std::vector<bnw_t>* arg_asset) {
 
 
 
+/* Arguments are copied to the member asset. */
 void EE488::BigNumberManager::set_asset(BIGNUM* arg_num, int arg_idx) {
-    /* Arguments are copied to the member asset.
-     */
-    
     BN_copy(asset.at(arg_idx).actor, arg_num);
 }
 
@@ -113,60 +117,176 @@ void EE488::BigNumberManager::reset_asset() {
 
 
 
-/*
- * do_keygen_t
- */
-int EE488::SchnorrSignature::do_keygen_t(const int arg_l, const int arg_n) {
+void EE488::SchnorrSignature::console_msg(const char* arg_fname, const char* arg_msg) {
 
 #ifdef __PRINT
-    auto clk_start = std::chrono::steady_clock::now();
+    std::cout << "\t" << arg_fname << ":: " << arg_msg;
 #endif
+    ;
+};
 
-    BN_generate_prime_ex(
-        const_cast<BIGNUM*>(manager.get_asset(BN_P)),
-        arg_l, 
-        false,      // Safe prime?
-        NULL,       // ADD
-        NULL,       // REM
-        NULL        // CALLBACK
-        );
 
-    BN_generate_prime_ex(
-        const_cast<BIGNUM*>(manager.get_asset(BN_Q)),
+
+void EE488::SchnorrSignature::console_msg(const char* arg_fname, const std::string& arg_str) {
+    this->console_msg(arg_fname, arg_str.c_str());
+};
+
+
+
+void EE488::SchnorrSignature::console_msgn(const char* arg_fname, const char* arg_msg) {
+
+#ifdef __PRINT
+    std::cout << "\t" << arg_fname << ":: " << arg_msg << std::endl;
+#endif
+    ;
+};
+
+
+void EE488::SchnorrSignature::console_msgn(const char* arg_fname, const std::string& arg_str) {
+    this->console_msgn(arg_fname, arg_str.c_str());
+};
+
+
+/*
+ * do_tkeygen
+ */
+int EE488::SchnorrSignature::do_tkeygen(const int arg_l, const int arg_n) {
+
+    /* https://www.openssl.org/docs/man1.1.1/man3/BN_generate_prime.html
+     * If add is not NULL, the prime will fulfill the condition 
+     * p % add == rem (p % add == 1 if rem == NULL) in order to suit a given generator.
+     */
+
+    console_msgn(__FUNCTION__, "Toy key generation start.");
+    
+    if (!BN_generate_prime_ex(
+        __BN_MODIFIABLE__(manager.get_asset(BN_Q)),
         arg_n, 
         false,      // Safe prime?
         NULL,       // ADD
         NULL,       // REM
         NULL        // CALLBACK
-        );
+        )) {
+        
+        console_msg(__FUNCTION__, "Error, Generation of Q failed.");
+    }
 
-
-    // Needs to be implemented.
-
-
-
+    if (!BN_generate_prime_ex(
+        __BN_MODIFIABLE__(manager.get_asset(BN_P)),
+        arg_l, 
+        false,                      // Safe prime?
+        manager.get_asset(BN_Q),    // ADD
+        NULL,                       // REM
+        NULL                        // CALLBACK
+        )) {
+        
+        console_msg(__FUNCTION__, "Error, Generation of P failed.");
+    }
 
 
 #ifdef __PRINT
-    auto clk_end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed_seconds = clk_end - clk_start;
+    console_msg(__FUNCTION__, "Generated P:");
+    BN_print_fp(
+        stdout, 
+        manager.get_asset(BN_P)
+        );
 
-    std::cerr << "do_keygen_r >\tDone. (elapsed: " << elapsed_seconds.count() << "s)\n";
+    std::cout << std::endl;
 #endif
+
+#ifdef __PRINT
+    console_msg(__FUNCTION__, "Generated Q:");
+    BN_print_fp(
+        stdout, 
+        manager.get_asset(BN_Q)
+        );
+
+    std::cout << std::endl;
+#endif
+
+    /* P and Q are generated, --till here. */
+
+    /* Generate Parameter g */
+    {   
+        BIGNUM* tbn_h   = BN_new();
+        BIGNUM* tbn_p_1 = BN_new();
+        BIGNUM* tbn_div = BN_new();
+
+        BN_CTX* tbn_ctx = BN_CTX_new();
+
+        BN_set_word(tbn_h, 2);  // Init to 2.
+
+        BN_copy(tbn_p_1, manager.get_asset(BN_P));  // tbn_p_1 = BN_P
+        BN_sub_word(tbn_p_1, 1);                    // tbn_p_1 = BN_P - 1
+
+        BN_div(tbn_div, NULL, tbn_p_1, manager.get_asset(BN_Q), tbn_ctx);
+
+        // Get random number 'g'
+        // Refered to, https://en.wikipedia.org/wiki/Digital_Signature_Algorithm
+        do {
+
+            BN_mod_exp(                     // g = h^k mod p
+                __BN_MODIFIABLE__(manager.get_asset(BN_G)),                        
+                                            // Save to, g
+                tbn_h,                      // h
+                tbn_div,                    // p - 1 / q
+                manager.get_asset(BN_P),    // p
+                tbn_ctx);  
+
+            BN_add_word(tbn_h, 1);          // Incr tbn_h by one.
+
+            console_msg(__FUNCTION__, "Test g: ");
+
+        } while (BN_is_one(
+            manager.get_asset(BN_G)
+        ));
+
+        BN_free(tbn_h), BN_free(tbn_p_1), BN_free(tbn_div);
+        BN_CTX_free(tbn_ctx);
+
+        console_msgn(__FUNCTION__, "Generated g.");
+    }
+
+    /* Generate Secrey Key x */
+    /*  If zero, generate again. 
+     */
+    do {
+        BN_rand_range(
+            __BN_MODIFIABLE__(manager.get_asset(BN_SK)), 
+            manager.get_asset(BN_Q));
+
+    } while (BN_is_zero(
+        manager.get_asset(BN_SK)
+    ));
+
+
+    /* Generate Public Key */
+    {
+        BN_CTX* tbn_ctx = BN_CTX_new();
+
+        BN_mod_exp(
+            __BN_MODIFIABLE__(manager.get_asset(BN_PK)), 
+            manager.get_asset(BN_G),
+            manager.get_asset(BN_SK),
+            manager.get_asset(BN_P),
+            tbn_ctx
+        );
+
+        BN_CTX_free(tbn_ctx);
+    }
+
+    console_msgn(__FUNCTION__, "Toy key generation end.");
+    pk_ready = sk_ready = true;
 
     return 0;
 }
 
 
 /*
- * do_keygen_r
+ * do_rkeygen
  */
-int EE488::SchnorrSignature::do_keygen_r(const int arg_bits) {
+int EE488::SchnorrSignature::do_rkeygen(const int arg_bits) {
     
-#ifdef __PRINT
-    auto clk_start = std::chrono::steady_clock::now();
-#endif
-
     DSA* dsa_key = DSA_new();
 
     /* Refer to,
@@ -186,25 +306,22 @@ int EE488::SchnorrSignature::do_keygen_r(const int arg_bits) {
     );
 
     if (!DSA_generate_key(dsa_key)) {
-#ifdef __PRINT
-        std::cerr << "ERROR, DSA_generate_key\n";
-        std::cout << "ERROR, DSA_generate_key\n";
-#endif
+        console_msgn(__FUNCTION__, "ERROR, DSA_generate_key");
         return -1;
     }
     
     /* Setting three parameters, p q g */
-    manager.set_asset(const_cast<BIGNUM*>(DSA_get0_p(dsa_key)), BN_P);
-    manager.set_asset(const_cast<BIGNUM*>(DSA_get0_q(dsa_key)), BN_Q);
-    manager.set_asset(const_cast<BIGNUM*>(DSA_get0_g(dsa_key)), BN_G);
+    manager.set_asset(__BN_MODIFIABLE__(DSA_get0_p(dsa_key)), BN_P);
+    manager.set_asset(__BN_MODIFIABLE__(DSA_get0_q(dsa_key)), BN_Q);
+    manager.set_asset(__BN_MODIFIABLE__(DSA_get0_g(dsa_key)), BN_G);
 
     /* Official API returns it as const BIGNUM. 
      *  Safe to convert, since no modifications are done.
      */
 
     manager.set_keys(
-        const_cast<BIGNUM*>(DSA_get0_pub_key(dsa_key)),
-        const_cast<BIGNUM*>(DSA_get0_priv_key(dsa_key))
+        __BN_MODIFIABLE__(DSA_get0_pub_key(dsa_key)),
+        __BN_MODIFIABLE__(DSA_get0_priv_key(dsa_key))
     );
 
     /* Record to file when __PRINT is enabled.
@@ -213,7 +330,7 @@ int EE488::SchnorrSignature::do_keygen_r(const int arg_bits) {
     {
 
 #ifdef __PRINT
-        std::cerr << "do_keygen_r >\tWriting to log...\n";
+        console_msgn(__FUNCTION__, "Writing to log...");
 
         FILE* fp = std::fopen("./params.log", "w");
 
@@ -226,10 +343,7 @@ int EE488::SchnorrSignature::do_keygen_r(const int arg_bits) {
 
         std::fclose(fp);
 
-        auto clk_end = std::chrono::steady_clock::now();
-        std::chrono::duration<double> elapsed_seconds = clk_end - clk_start;
-
-        std::cerr << "do_keygen_r >\tDone. (elapsed: " << elapsed_seconds.count() << "s)\n";
+        console_msgn(__FUNCTION__, "Done.");
 #endif
 
     }
@@ -239,7 +353,7 @@ int EE488::SchnorrSignature::do_keygen_r(const int arg_bits) {
      */
     DSA_free(dsa_key);  
 
-    key_ready = true; // Now the key is ready to go.
+    pk_ready = sk_ready = true; // Now the key is ready to go.
 
     return 0;
 }
@@ -252,9 +366,8 @@ int EE488::SchnorrSignature::do_keygen_r(const int arg_bits) {
 int EE488::SchnorrSignature::do_regmsg(const char* arg_pmsg) {
     std::strcpy(reinterpret_cast<char *>(mstr), arg_pmsg);
 
-#ifdef __PRINT
-    std::cout << "do_regmsg >\tRegistered string: \n\t\t" << this->mstr << "\n";
-#endif
+    console_msgn(__FUNCTION__, "Registered string:");
+    console_msgn(__FUNCTION__, reinterpret_cast<char *>(mstr));
 
     msg_ready = true;// Now the original message is ready to go.
     return 0;
@@ -262,101 +375,139 @@ int EE488::SchnorrSignature::do_regmsg(const char* arg_pmsg) {
 
 
 /*
- * do_hash
+ * do_rhash
  */
-int EE488::SchnorrSignature::do_hash() {
+BIGNUM* EE488::SchnorrSignature::do_rhash() {
 
-    return this->do_hash(reinterpret_cast<char *>(this->mstr));
+    return this->do_rhash(reinterpret_cast<char *>(this->mstr));
 }
 
 
-int EE488::SchnorrSignature::do_hash(const char* arg_str) {
+BIGNUM* EE488::SchnorrSignature::do_rhash(const char* arg_str) {
     
-    return this->do_hash(std::string(arg_str));
+    return this->do_rhash(std::string(arg_str));
 }
 
 
-int EE488::SchnorrSignature::do_hash(std::string arg_str) {
+BIGNUM* EE488::SchnorrSignature::do_rhash(std::string arg_str) {
 
-    int ret_code = 0;
-
-    if (!is_key_ready()) {
-#ifdef __PRINT
-    std::cerr << "do_hash >\tError, message not ready.\n";
-    std::cout << "do_hash >\tError, message not ready.\n";
-#endif
-        return -1;
-    }
-
-#ifdef __PRINT
-    auto clk_start = std::chrono::steady_clock::now();
-#endif
+    SHA256_CTX sha_context; // Local
 
     if (!SHA256_Init(&sha_context)) {
-#ifdef __PRINT
-        std::cout << "do_hash>\tError, SHA256_Init\n";
-#endif
-        ret_code = -1;
+        console_msgn(__FUNCTION__, "Error, SHA256_Init");
+        return nullptr;
     }
 
     if(!SHA256_Update(&sha_context, arg_str.c_str(), arg_str.length())) {
-#ifdef __PRINT
-		std::cout << "do_hash>\tError, SHA256_Update\n";
-#endif
-        ret_code = -1;
+        console_msgn(__FUNCTION__, "Error, SHA256_Update");
+        return nullptr;
     }
 
 	if(!SHA256_Final(sha_digest, &sha_context)) {
-#ifdef __PRINT
-		std::cout << "do_hash>\tError, SHA256_Final\n";
-#endif
-        ret_code = -1;
+        console_msgn(__FUNCTION__, "Error, SHA256_Final");
+        return nullptr;
     }
 
-#ifdef __PRINT
-        auto clk_end = std::chrono::steady_clock::now();
-        std::chrono::duration<double> elapsed_seconds = clk_end - clk_start;
+    /* Register the hash value. */
+    
+    BIGNUM* hash_val = BN_new();
+    // __BN_MODIFIABLE__(manager.get_asset(BN_E));
 
-        std::cerr << "do_hash >\tDone. (elapsed: " << elapsed_seconds.count() << "s)\n";
-#endif
-
-    {
-        BIGNUM* hash_val = const_cast<BIGNUM*>(manager.get_asset(BN_E));
-
-        /* Conversion */
-        BN_bin2bn(sha_digest, sizeof(sha_digest), hash_val);
-        
+    /* Conversion */
+    BN_bin2bn(sha_digest, sizeof(sha_digest), hash_val);
+    
+    console_msg(__FUNCTION__, "SHA256 hashed: ");
 #ifdef __PRINT 
-        FILE* fp = std::fopen("./hash.log", "w");
-        std::fprintf(fp, "Given string\t");
-        std::fprintf(fp, arg_str.c_str());
-        std::fprintf(fp, "\nHashed\t"), BN_print_fp(fp, hash_val);
-        std::fclose(fp);
-#endif
-        // BN_free(hash_val);
-    }
+    BN_print_fp(stdout, hash_val);
+    std::cout << std::endl;
 
-    return ret_code;
+    FILE* fp = std::fopen("./hash.log", "w");
+    std::fprintf(fp, "Given string\t");
+    std::fprintf(fp, arg_str.c_str());
+    std::fprintf(fp, "\nHashed\t"), BN_print_fp(fp, hash_val);
+    std::fclose(fp);
+#endif
+
+
+    return hash_val;
 }
 
+
+/*
+ * do_thash
+ */
+BIGNUM* EE488::SchnorrSignature::do_thash(const int arg_bitn) {
+
+    return this->do_thash(arg_bitn, reinterpret_cast<char *>(this->mstr));
+}
+
+
+BIGNUM* EE488::SchnorrSignature::do_thash(const int arg_bitn, const char* arg_str) {
+    
+    return this->do_thash(arg_bitn, std::string(arg_str));
+}
+
+
+
+BIGNUM* EE488::SchnorrSignature::do_thash(const int arg_bitn, std::string arg_str) {
+
+    SHA256_CTX sha_context; // Local
+
+    /* Almost identical to do_rhash */
+    if (!SHA256_Init(&sha_context)) {
+        console_msgn(__FUNCTION__, "Error, SHA256_Init");
+        return nullptr;
+    }
+
+    if(!SHA256_Update(&sha_context, arg_str.c_str(), arg_str.length())) {
+        console_msgn(__FUNCTION__, "Error, SHA256_Update");
+        return nullptr;
+    }
+
+	if(!SHA256_Final(sha_digest, &sha_context)) {
+        console_msgn(__FUNCTION__, "Error, SHA256_Final");
+        return nullptr;
+    }
+
+    /* Register the hash value. */
+
+    BIGNUM* hash_val = BN_new();
+    // __BN_MODIFIABLE__(manager.get_asset(BN_E));
+
+    /* Conversion */
+    BN_bin2bn(sha_digest, sizeof(sha_digest), hash_val);
+
+    /* Toy case, use only leftmost arg_bitn bits.*/
+    console_msg(__FUNCTION__, "SHA256 hashed: ");
+#ifdef __PRINT 
+    BN_print_fp(stdout, hash_val);
+    std::cout << std::endl;
+#endif
+
+    /* Cut! and Re-register */
+    BN_rshift(
+        hash_val, hash_val, arg_bitn
+    );
+    
+    console_msg(__FUNCTION__, "SHA256 cut-hashed: ");
+#ifdef __PRINT 
+    BN_print_fp(stdout, hash_val);
+    std::cout << std::endl;
+#endif
+
+    return hash_val;
+}
 
 
 /*
  * do_sign
  */
-int EE488::SchnorrSignature::do_sign() {
+int EE488::SchnorrSignature::do_sign(const int arg_bitn) {
     
-    if (!is_key_ready() || !is_msg_ready()) {
-#ifdef __PRINT
-    std::cout << "do_sign >\tError, key/msg is not ready.\n";
-#endif
-
+    if (!is_sk_ready() || !is_msg_ready()) {
+        console_msgn(__FUNCTION__, "Error, key/msg is not ready.");
         return -1;
     }
-
-#ifdef __PRINT
-    auto clk_start = std::chrono::steady_clock::now();
-#endif
 
     {
         BIGNUM* tbn = BN_new();         // Temporary big number.
@@ -388,6 +539,7 @@ int EE488::SchnorrSignature::do_sign() {
 
         /* Set BN_R */
         manager.set_asset(tbn, BN_R);
+        BN_clear(tbn);
 
         /* Second round.
          */
@@ -401,56 +553,47 @@ int EE488::SchnorrSignature::do_sign() {
         );
 
         /* Run hashing */
-        if (do_hash()) return -1;
-
-#ifdef __PRINT
-        std::cout << "do_sign >\tHashed (E): ";
-        BN_print_fp(stdout, manager.get_asset(BN_E)), 
-        std::cout << "\n";
-#endif
-  
+        BIGNUM* hash_value = do_hash(arg_bitn);
 
         BN_mod_mul(
-            const_cast<BIGNUM*>(manager.get_asset(BN_R)),
-                                        // Save to, r
+            tbn,                        // Save to, r
             manager.get_asset(BN_SK),   // secret key
-            manager.get_asset(BN_E),    // e
+            hash_value,                 // hashed?
             manager.get_asset(BN_Q),    // q
             tbn_ctx
         );
 
         BN_mod_add(
-            const_cast<BIGNUM*>(manager.get_asset(BN_S)),
-            manager.get_asset(BN_R),
+            __BN_MODIFIABLE__(manager.get_asset(BN_S)),
             tbn,
+            manager.get_asset(BN_K),
             manager.get_asset(BN_Q),
             tbn_ctx
         );
+        
+        manager.set_asset(hash_value, BN_E);
+        BN_free(hash_value);
 
+        console_msg(__FUNCTION__, "Signed [S]: ");
 #ifdef __PRINT
-        std::cout << "\t\tSigned [S]: ";
         BN_print_fp(stdout, manager.get_asset(BN_S)), 
         std::cout << "\n";
+#endif
 
-        std::cout << "\t\tSigned [E]: ";
+        console_msg(__FUNCTION__, "Signed [E]: ");
+#ifdef __PRINT
         BN_print_fp(stdout, manager.get_asset(BN_E)), 
         std::cout << "\n";
 #endif
 
+        /* Remove temporary values */
         BN_free(tbn);
-
+        BN_CTX_free(tbn_ctx);
     }
- 
-
-#ifdef __PRINT
-    auto clk_end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed_seconds = clk_end - clk_start;
-
-    std::cerr << "do_sign >\tDone. (elapsed: " << elapsed_seconds.count() << "s)\n";
-#endif
 
     sign_ready = true;
-    
+
+    console_msgn(__FUNCTION__, "Done.");
     return 0;
 }
 
@@ -459,28 +602,30 @@ int EE488::SchnorrSignature::do_sign() {
 /*
  * do_verify
  */
-int EE488::SchnorrSignature::do_verify() {
+int EE488::SchnorrSignature::do_verify(const int arg_bitn) {
 
     int ret_code = 0;
 
     if (
-        !is_key_ready() || 
         !is_msg_ready() ||
-        !is_sign_ready()                    // All threes should be ready.
+        !is_pk_ready()  ||  // All threes should be ready.
+        !is_sign_ready()
         ) {
-#ifdef __PRINT
-    std::cout << "do_verify >\tError, key/msg is not ready.\n";
-#endif
 
+        console_msgn(__FUNCTION__, "Error, key/msg is not ready.");
         return -1;
     }
 
+        console_msg(__FUNCTION__, "Current signed [S]: ");
 #ifdef __PRINT
-    auto clk_start = std::chrono::steady_clock::now();
+        BN_print_fp(stdout, manager.get_asset(BN_S)), 
+        std::cout << "\n";
 #endif
 
+        console_msg(__FUNCTION__, "Current signed [E]: ");
 #ifdef __PRINT
-    
+        BN_print_fp(stdout, manager.get_asset(BN_E)), 
+        std::cout << "\n";
 #endif
 
     {
@@ -488,7 +633,6 @@ int EE488::SchnorrSignature::do_verify() {
         BIGNUM* tbn_2 = BN_new();           // Temporary Big Number
         BIGNUM* ipk = BN_new();             // Inverse of Public Key
         BN_CTX* tbn_ctx = BN_CTX_new();     // Temporary BN Context
-
 
         /* 
          * tbn_1 = g^s
@@ -516,8 +660,8 @@ int EE488::SchnorrSignature::do_verify() {
         BN_mod_exp(
             tbn_2,                          // Return value lies here.
             ipk,                            // Inverse of public key
-            manager.get_asset(BN_PK),       // public key
-            manager.get_asset(BN_E),        // e
+            manager.get_asset(BN_E),        // public key
+            manager.get_asset(BN_P),        // e
             tbn_ctx
         );
 
@@ -525,7 +669,7 @@ int EE488::SchnorrSignature::do_verify() {
          * tbn_1 * tbn_2 = g^s * {PK^{-1}}^e
          */
         BN_mod_mul(
-            const_cast<BIGNUM*>(manager.get_asset(BN_V)),
+            __BN_MODIFIABLE__(manager.get_asset(BN_V)),
                                             // v
             tbn_1,                          // g^s
             tbn_2,                          // {PK^{-1}}^e
@@ -543,35 +687,41 @@ int EE488::SchnorrSignature::do_verify() {
             arr_v2bin                       // Destination
         );
 
-#ifdef __PRINT
-        std::cout << "do_verify >\tHashed (V): ";
-        BN_print_fp(stdout, manager.get_asset(BN_V)), 
-        std::cout << "\n";
-#endif
-
         std::strcat(
             reinterpret_cast<char*>(mstr),  
             reinterpret_cast<char*>(arr_v2bin)
         );
 
-        /* Run hashing */
-        if (do_hash()) return -1;
-
         BN_free(tbn_1), BN_free(tbn_2);
     }
+
+    BIGNUM* hash_value = do_hash(arg_bitn);
+    manager.set_asset(hash_value, BN_NE);
 
     BN_bin2bn(
         get_sha_digest(),
         sizeof(sha_digest),
-        const_cast<BIGNUM*>(manager.get_asset(BN_NE))
+        __BN_MODIFIABLE__(manager.get_asset(BN_NE))
         );
+    
+    /* Is toy? */
+    if (toy_enable) {
+        BN_rshift(
+            __BN_MODIFIABLE__(manager.get_asset(BN_NE)), 
+            manager.get_asset(BN_NE), 
+            arg_bitn
+        );
+    }
 
+    /* Prints out. */
+        console_msg(__FUNCTION__, "New [E]: ");
 #ifdef __PRINT
-        std::cout << "do_verify >\tNew [E]: ";
         BN_print_fp(stdout, manager.get_asset(BN_NE)), 
         std::cout << "\n";
+#endif
 
-        std::cout << "do_verify >\tOld [E]: ";
+        console_msg(__FUNCTION__, "Old [E]: ");
+#ifdef __PRINT
         BN_print_fp(stdout, manager.get_asset(BN_E)), 
         std::cout << "\n";
 #endif
@@ -581,12 +731,7 @@ int EE488::SchnorrSignature::do_verify() {
         manager.get_asset(BN_NE)
         );
 
-#ifdef __PRINT
-    auto clk_end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed_seconds = clk_end - clk_start;
-
-    std::cerr << "do_sign >\tDone. (elapsed: " << elapsed_seconds.count() << "s)\n";
-#endif
+    BN_free(hash_value);
 
     return ret_code;
 }
@@ -597,8 +742,10 @@ int EE488::SchnorrSignature::do_verify() {
  */
 int EE488::SchnorrSignature::do_reset() {
 
+    console_msgn(__FUNCTION__, "Reset.");
+
     manager.reset_asset(); // Clear all containers
-    key_ready = msg_ready = sign_ready = veri_ready = false;
+    toy_enable = pk_ready = sk_ready = msg_ready = sign_ready = false;
 
     return 0;
 }

@@ -1,13 +1,13 @@
 CC=g++
-CFLAGS=-g -Wall -std=c++17
+CFLAGS=-g -Wall -std=c++17 -O2
 SSL_FLAGS=-lssl -lcrypto
 
-TARGET=schnorr.exec
+TARGET=schnorr.run
 OBJS=app.o schnorr.o
 HDRS=schnorr.h
 SRC=app.cc schnorr.cc
 
-TEST_TARGET=api-test.exec
+TEST_TARGET=api-test.run
 TEST_OBJS=api_test.o schnorr.o
 TEST_SRC=api_test.cc schnorr.cc
 
@@ -32,6 +32,6 @@ all: $(TARGET) $(TEST_TARGET)
 
 # CLEAN
 clean:
-	rm -f *.o *.exec
+	rm -f *.o *.run
 	rm -f *.log
 	
